@@ -1,0 +1,16 @@
+#!name=Coolapk JSON Filter
+#!desc=基于 Coolapk iOS 16.5.6 三份 HAR 过滤广告、商品推广、轮播、专题、商品榜、搜索热词/热榜及链接跟踪参数，并可本地响应隐私上报。
+#!system=ios
+#!arguments=脚本地址:https://raw.githubusercontent.com/giveup/sg-mod/main/scripts/coolapk/response.bundle.js,过滤广告:true,过滤商品附件:true,精简首页配置:true,隐藏轮播卡片:true,隐藏专题卡片:true,隐藏商品榜:true,隐藏热门搜索热榜:true,清理链接跟踪参数:true,隐藏普通列表卡片:false,拦截隐私上报:true
+#!arguments-desc=默认删除已验证的广告/推广、全部轮播、ZHUANTI 专题、goodsRankingCard，并将 type=hotSearch 的热门搜索与热榜 data 返回空数组；链接只清明确跟踪参数；隐私上报使用稳定成功响应。普通 listCard 默认保留。
+
+[Script]
+Coolapk.JSON.Filter = type=http-response,pattern=^https:\/\/api\.coolapk\.com\/v6\/(?:main\/(?:init|indexV8)|page\/dataList|feed\/(?:detail|replyList)|search)(?:\?|$),requires-body=1,max-size=-1,engine=webview,timeout=30,script-path={{{脚本地址}}}?v=498f0616,argument="{\"blockAds\":{{{过滤广告}}},\"blockCommerceAttachments\":{{{过滤商品附件}}},\"customizeMainInit\":{{{精简首页配置}}},\"blockImageCarousel\":{{{隐藏轮播卡片}}},\"blockZhuanti\":{{{隐藏专题卡片}}},\"blockGoodsRankingCards\":{{{隐藏商品榜}}},\"blockSearchHotContent\":{{{隐藏热门搜索热榜}}},\"stripTrackingParameters\":{{{清理链接跟踪参数}}},\"blockListCards\":{{{隐藏普通列表卡片}}}}"
+
+[Map Local]
+^h(?=[{{{拦截隐私上报}}}])ttps:\/\/global-iuni\.checktrustworthiness\.com\/i\/idaa\/report(?:\?|$) data="" data-type=text status-code=200
+^h(?=[{{{拦截隐私上报}}}])ttps:\/\/global-iuni\.checktrustworthiness\.com\/i\/idcc\/report(?:\?|$) data="{\"err\": 0}" data-type=text status-code=200
+^h(?=[{{{拦截隐私上报}}}])ttps:\/\/tdid\.m\.qq\.com\/event\/report(?:\?|$) data="{\"ret\":0}" data-type=text status-code=200
+
+[MITM]
+hostname = %APPEND% api.coolapk.com, global-iuni.checktrustworthiness.com, tdid.m.qq.com
