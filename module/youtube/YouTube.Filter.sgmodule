@@ -1,0 +1,29 @@
+#!name=YouTube Protobuf Filter
+#!desc=V4.4：过滤广告/佣金商品；可选移除评论搜索跳转、补全翻译按钮和清理响应跟踪元数据；新增 error_204 独立 Map Local 开关。不处理 googlevideo UMP。
+#!system=ios
+#!arguments=屏蔽Shorts按钮:false,屏蔽推荐调查:false,屏蔽评论搜索跳转:false,强制评论翻译按钮:false,移除响应跟踪参数:false,拦截AdsStats:true,拦截LogEvent:true,拦截Watchtime:true,拦截Atr:true,拦截Playback:false,拦截Delayplay:true,拦截Qoe:true,拦截Engage:true,拦截Pagead:true,拦截Ptracking:true,拦截Google支持页Log:true,拦截GooglePlayLog:true,拦截Error204:true
+#!arguments-desc=所有开关支持 true/false。评论/响应功能默认关闭；Playback 因影响观看记录默认不拦截，其余十二类隐私/统计接口默认拦截且可独立关闭。
+
+[Map Local]
+# 这些请求本身只承载广告统计/追踪，可以直接返回空响应，无需启动 JS。
+^h(?=[{{{拦截AdsStats}}}])ttps?:\/\/(www|s)\.youtube\.com\/api\/stats\/ads(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Pagead}}}])ttps?:\/\/(www|s)\.youtube\.com\/pagead(?:\/|\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Ptracking}}}])ttps?:\/\/(www|s)\.youtube\.com\/ptracking(?:\?|$) data-type=text data=" " status-code=200
+# 隐私开关使用模块参数替换正则中的字符判断：true 命中，false 不命中。
+^h(?=[{{{拦截Atr}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/atr(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Playback}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/playback(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Delayplay}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/delayplay(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Qoe}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/qoe(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Engage}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/engage(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Watchtime}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/watchtime(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截LogEvent}}}])ttps?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Google支持页Log}}}])ttps?:\/\/play\.google\.com\/log(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截GooglePlayLog}}}])ttps?:\/\/play\.googleapis\.com\/log\/batch(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Error204}}}])ttps?:\/\/www\.youtube\.com\/error_204(?:\?|$) data-type=text data=" " status-code=200
+
+[Script]
+# 下列响应同时包含正常内容和广告节点，必须做 protobuf 字段级过滤，不能整条 Map Local。
+YouTube.Protobuf.Filter = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|get_watch|guide|reel\/(reel_watch_sequence|reel_item_watch))(?:\?|$),requires-body=1,binary-body-mode=1,max-size=-1,engine=webview,timeout=60,script-path=https://raw.githubusercontent.com/giveup/sg-mod/main/scripts/youtube/response.bundle.js,argument="{"blockShorts":{{{屏蔽Shorts按钮}}},"blockRecommendationSurvey":{{{屏蔽推荐调查}}},"blockCommentSearchLinks":{{{屏蔽评论搜索跳转}}},"forceCommentTranslation":{{{强制评论翻译按钮}}},"stripResponseTrackingParameters":{{{移除响应跟踪参数}}}}"
+
+[MITM]
+hostname = %APPEND% youtubei.googleapis.com, www.youtube.com, s.youtube.com, play.google.com, play.googleapis.com
