@@ -5,21 +5,22 @@
 #!arguments-desc=所有开关支持 true/false。评论/响应功能默认关闭；Playback 因影响观看记录默认不拦截，其余十二类隐私/统计接口默认拦截且可独立关闭。
 
 [Map Local]
-# 这些请求本身只承载广告统计/追踪，可以直接返回空响应，无需启动 JS。
-^h(?=[{{{拦截AdsStats}}}])ttps?:\/\/(www|s)\.youtube\.com\/api\/stats\/ads(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Pagead}}}])ttps?:\/\/(www|s)\.youtube\.com\/pagead(?:\/|\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Ptracking}}}])ttps?:\/\/(www|s)\.youtube\.com\/ptracking(?:\?|$) data-type=text data=" " status-code=200
+# 响应类型来自真实 HAR：stats/ptracking 返回空 204，pagead 区分空 HTML 与 GIF pixel。
+^h(?=[{{{拦截AdsStats}}}])ttps?:\/\/(www|s)\.youtube\.com\/api\/stats\/ads(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Pagead}}}])ttps?:\/\/(www|s)\.youtube\.com\/pagead\/adview(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=GB2312" status-code=200
+^h(?=[{{{拦截Pagead}}}])ttps?:\/\/(www|s)\.youtube\.com\/pagead(?:\/|\?|$) data-type=tiny-gif status-code=200
+^h(?=[{{{拦截Ptracking}}}])ttps?:\/\/(www|s)\.youtube\.com\/ptracking(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
 # 隐私开关使用模块参数替换正则中的字符判断：true 命中，false 不命中。
-^h(?=[{{{拦截Atr}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/atr(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Playback}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/playback(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Delayplay}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/delayplay(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Qoe}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/qoe(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Engage}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/engage(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Watchtime}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/watchtime(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截LogEvent}}}])ttps?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Google支持页Log}}}])ttps?:\/\/play\.google\.com\/log(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截GooglePlayLog}}}])ttps?:\/\/play\.googleapis\.com\/log\/batch(?:\?|$) data-type=text data=" " status-code=200
-^h(?=[{{{拦截Error204}}}])ttps?:\/\/www\.youtube\.com\/error_204(?:\?|$) data-type=text data=" " status-code=200
+^h(?=[{{{拦截Atr}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/atr(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Playback}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/playback(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Delayplay}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/delayplay(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Qoe}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/qoe(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Engage}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/engage(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截Watchtime}}}])ttps?:\/\/s\.youtube\.com\/api\/stats\/watchtime(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
+^h(?=[{{{拦截LogEvent}}}])ttps?:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/log_event(?:\?|$) data-type=base64 data="" header="Content-Type:application/x-protobuf" status-code=200
+^h(?=[{{{拦截Google支持页Log}}}])ttps?:\/\/play\.google\.com\/log(?:\?|$) data-type=text data="[]" header="Content-Type:application/json; charset=UTF-8" status-code=200
+^h(?=[{{{拦截GooglePlayLog}}}])ttps?:\/\/play\.googleapis\.com\/log\/batch(?:\?|$) data-type=base64 data="" header="Content-Type:application/x-protobuf" status-code=200
+^h(?=[{{{拦截Error204}}}])ttps?:\/\/www\.youtube\.com\/error_204(?:\?|$) data-type=text data="" header="Content-Type:text/html; charset=UTF-8" status-code=204
 # 截断带 oad 的非 videoplayback initplayback，迫使客户端回退播放路径。
 ^https?:\/\/[\w-]+\.googlevideo\.com\/(?!(dclk_video_ads|videoplayback\?)).+&oad data-type=text data=" " status-code=200
 
