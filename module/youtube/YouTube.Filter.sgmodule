@@ -1,5 +1,5 @@
 #!name=YouTube Protobuf Filter
-#!desc=V4.4：过滤广告/佣金商品；可选移除评论搜索跳转、补全翻译按钮和清理响应跟踪元数据；新增 error_204 独立 Map Local 开关，并启用 googlevideo oad 播放回退。
+#!desc=V4.5：补充新版 Shorts 广告与佣金覆盖层过滤；保留倍速菜单及既有隐私、评论开关，并启用 googlevideo oad 播放回退。
 #!system=ios
 #!arguments=屏蔽Shorts按钮:false,屏蔽推荐调查:false,屏蔽评论搜索跳转:false,强制评论翻译按钮:false,移除响应跟踪参数:false,拦截AdsStats:true,拦截LogEvent:true,拦截Watchtime:true,拦截Atr:true,拦截Playback:false,拦截Delayplay:true,拦截Qoe:true,拦截Engage:true,拦截Pagead:true,拦截Ptracking:true,拦截Google支持页Log:true,拦截GooglePlayLog:true,拦截Error204:true
 #!arguments-desc=所有开关支持 true/false。评论/响应功能默认关闭；Playback 因影响观看记录默认不拦截，其余十二类隐私/统计接口默认拦截且可独立关闭。
