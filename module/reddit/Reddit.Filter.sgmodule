@@ -1,5 +1,5 @@
 #!name=Reddit JSON Filter
-#!desc=基于 Reddit iOS 2025.13.1 抓包过滤 GraphQL 广告元素，并可本地响应 Reddit 自有遥测上报。
+#!desc=基于 Reddit iOS 2025.13.1 两份抓包过滤 GraphQL 广告元素，并可本地响应 Reddit 自有遥测上报。
 #!system=ios
 #!arguments=脚本地址:https://raw.githubusercontent.com/giveup/sg-mod/main/scripts/reddit/response.bundle.js,过滤AdPost:true,过滤AdPayload:true,过滤Promoted:true,拦截隐私上报:true
 #!arguments-desc=默认删除已验证的 AdPost 与非空 adPayload 元素，并兼容 promoted/isPromoted/isAdPost=true 标记；隐私开关仅拦截 e.reddit.com/v2p、/v2c，返回抓包观察到的 200 空文本响应。
