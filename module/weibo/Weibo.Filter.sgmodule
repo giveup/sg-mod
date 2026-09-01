@@ -1,0 +1,20 @@
+#!name=Weibo International Filter
+#!desc=基于微博国际版 2026-09-01 抓包过滤广告、热搜、正文推荐词、评论搜索高亮和 URL 跟踪参数，并可选择覆盖会员、网络及旧版卡片字段。
+#!system=ios
+#!arguments=脚本地址:https://raw.githubusercontent.com/giveup/sg-mod/main/scripts/weibo/response.bundle.js,过滤广告:true,隐藏会员横幅:true,隐藏热搜:true,隐藏正文推荐词:true,移除评论搜索高亮:true,清理URL跟踪参数:true,会员字段覆盖:false,网络配置覆盖:false,旧版卡片状态覆盖:false,拦截广告与上报:true
+#!arguments-desc=广告、会员横幅、热搜、正文“大家都在搜”、评论搜索高亮、证据明确的 URL 归因参数和已确认的广告/上报 URL 默认处理；会员、网络和旧版卡片状态覆盖默认关闭。
+
+[Map Local]
+^h(?=[{{{拦截广告与上报}}}])ttps:\/\/api\.weibo\.cn\/2\/ad\/(?:[^?]*)(?:\?|$) data="{\"data\":[],\"errno\":0,\"error\":\"\"}" data-type=text status-code=200 header="Content-Type:application/json; charset=utf-8"
+^h(?=[{{{隐藏热搜}}}])ttps:\/\/weibointl\.api\.weibo\.cn\/portal\.php\?(?:[^#]*&)?a=search_topic(?:&|$) data="{\"data\":[],\"info\":\"\",\"retcode\":0,\"ext\":{\"search_hot_simple\":{\"title\":\"\",\"desc\":\"\",\"more\":\"\"},\"search_hot\":{\"title\":\"\",\"desc\":\"\",\"more\":\"\"},\"search_city\":{\"title\":\"\",\"desc\":\"\",\"more\":\"\"}}}" data-type=text status-code=200 header="Content-Type:application/json; charset=utf-8"
+
+[URL Rewrite]
+^h(?=[{{{拦截广告与上报}}}])ttps:\/\/api\.weibo\.cn\/2\/(?:logservice\/|sdk\/union_config(?:\?|$)) - reject
+^h(?=[{{{拦截广告与上报}}}])ttps:\/\/(?:bootpreload|bootrealtime)\.uve\.weibo\.com\/ - reject
+^h(?=[{{{拦截广告与上报}}}])ttps:\/\/tqt\.weibo\.cn\/ - reject
+
+[Script]
+Weibo.JSON.Filter = type=http-response,pattern=^https:\/\/(?:api\.weibo\.cn\/2\/(?:ad\/[^?]*|account\/login|comments\/build_comments|profile(?:\/statuses\/tab)?|cardlist|favorites|statuses\/(?:container_detail|container_timeline_hot|friends\/timeline|mentions))|weibointl\.api\.weibo\.cn\/portal\.php)(?:\?|$),requires-body=1,max-size=-1,engine=webview,timeout=30,script-path={{{脚本地址}}}?v=1a1133c4,argument="{\"blockAds\":{{{过滤广告}}},\"blockVipBanner\":{{{隐藏会员横幅}}},\"disableHotSearch\":{{{隐藏热搜}}},\"blockPostTrendingSearches\":{{{隐藏正文推荐词}}},\"removeCommentSearchHighlights\":{{{移除评论搜索高亮}}},\"stripTrackingParameters\":{{{清理URL跟踪参数}}},\"applyMembershipConfig\":{{{会员字段覆盖}}},\"applyNetworkTuning\":{{{网络配置覆盖}}},\"applyLegacyCardStatus\":{{{旧版卡片状态覆盖}}}}"
+
+[MITM]
+hostname = %APPEND% api.weibo.cn, weibointl.api.weibo.cn, bootpreload.uve.weibo.com, bootrealtime.uve.weibo.com, tqt.weibo.cn
