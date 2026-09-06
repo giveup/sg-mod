@@ -1,0 +1,19 @@
+name: github-repo-stats
+
+on:
+  schedule:
+    # 每天 UTC 23:00（北京时间次日 07:00）自动执行，获取当天的流量与访客统计
+    - cron: "0 23 * * *"
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  run-ghrs:
+    name: Track Repository Traffic & Stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run GitHub Repo Stats
+        uses: jgehrcke/github-repo-stats@v1.4.2
+        with:
+          repository: giveup/sg-mod
+          ghtoken: ${{ secrets.GHRS_GITHUB_API_TOKEN }}
+          databranch: github-repo-stats
